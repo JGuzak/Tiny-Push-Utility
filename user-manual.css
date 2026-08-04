@@ -1,0 +1,98 @@
+:root {
+  --black: #1A1A18;
+  --white: #F5F2E8;
+  --concrete: #8A8680;
+  --red: #C8302A;
+  --blue: #1E3878;
+  --yellow: #E8C018;
+}
+
+@page {
+  background: var(--white);
+}
+
+body {
+  margin: 0;
+  color: var(--black);
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.55;
+}
+
+.document {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 72px 56px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Montserrat", "Avenir Next", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: 56px;
+  margin: 0 0 48px;
+}
+
+h2 {
+  font-size: 28px;
+  margin: 56px 0 16px;
+  border-top: 2px solid #111;
+  padding-top: 14px;
+}
+
+p {
+  font-size: 16px;
+}
+
+a:link {
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+ul {
+  alignment-baseline: center;
+}
+
+li a:link {
+  color: var(--black);
+}
+
+li:hover a:link {
+  color: var(--blue);
+}
+
+ul li::marker {
+  content: "";
+}
+
+:not(pre):not(.hljs)>code {
+  color: var(--red);
+  font-size: inherit;
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  margin: 10px auto;
+  border-collapse: separate !important;
+  border-radius: 5px;
+  border-spacing: 0;
+  border: 1px solid var(--black);
+  background-color: var(--white);
+}
+
+tbody tr {
+  border: 1px solid var(--black);
+}
+
+tbody tr:nth-child(odd) {
+  background-color: hsl(from var(--white) h s calc(l + 3));
+
+}

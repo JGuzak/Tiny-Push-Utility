@@ -1,0 +1,131 @@
+trigger:
+- main
+
+variables:
+  # deploy: ${deploy}
+  deploy: True
+  artifactPath: 'distributables'
+
+stages:
+- stage: Build
+  displayName: 'Build distributables'
+  jobs:
+  - job: windows
+    displayName: 'Build Windows distributable'
+    pool:
+      name: TinyAgentPool
+      demands:
+      - Agent.OS -equals Windows_NT
+    steps:
+    - task: UseNode@1
+      inputs:
+        version: '24.18.0'
+      displayName: 'Install Node.js'
+    - script: npm ci
+      displayName: 'Install dependencies'
+    - script: npm run release:win
+      displayName: 'Build Windows distributable'
+    - publish: artifacts
+      artifact: windows
+      displayName: 'Publish Windows pipeline artifact'
+
+  - job: linux
+    displayName: 'Build Linux distributable'
+    pool:
+      name: TinyAgentPool
+      demands:
+      - Agent.OS -equals Linux
+    steps:
+    - task: UseNode@1
+      inputs:
+        version: '24.18.0'
+      displayName: 'Install Node.js'
+    - script: npm ci
+      displayName: 'Install dependencies'
+    - script: npm run release:linux
+      displayName: 'Build Linux distributable'
+    - publish: artifacts
+      artifact: linux
+      displayName: 'Publish Linux pipeline artifact'
+
+- stage: Package
+  displayName: 'Package final artifact'
+  dependsOn: Build
+  jobs:
+  - job: final
+    displayName: 'Collect final staged artifacts'
+    pool:
+      name: TinyAgentPool
+      demands:
+      - Agent.OS -equals Linux
+    steps:
+    - checkout: self
+    - download: current
+      artifact: windows
+      displayName: 'Download Windows artifact'
+    - download: current
+      artifact: linux
+      displayName: 'Download Linux artifact'
+    - bash: |
+        set -euo pipefail
+
+        artifact_path="$(Build.ArtifactStagingDirectory)/$(artifactPath)"
+        mkdir -p "$artifact_path"
+        find "$(Pipeline.Workspace)/windows" "$(Pipeline.Workspace)/linux" \
+          -maxdepth 1 \
+          -type f \
+          \( -name '*.exe' -o -name '*.msi' -o -name '*.zip' -o -name '*.dmg' -o -name '*.pkg' -o -name '*.deb' -o -name '*.rpm' -o -name '*.AppImage' \) \
+          -exec cp {} "$artifact_path/" \;
+
+        cp "$(Build.SourcesDirectory)/user-manual.pdf" "$artifact_path/"
+
+        distribution_count=$(find "$artifact_path" \
+          -maxdepth 1 \
+          -type f \
+          \( -name '*.exe' -o -name '*.msi' -o -name '*.zip' -o -name '*.dmg' -o -name '*.pkg' -o -name '*.deb' -o -name '*.rpm' -o -name '*.AppImage' \) \
+          | wc -l)
+
+        if [ "$distribution_count" -eq 0 ]; then
+          echo 'No distributable files were found.' >&2
+          exit 1
+        fi
+
+        (
+          cd "$artifact_path"
+          find . \
+            -maxdepth 1 \
+            -type f \
+            \( -name '*.exe' -o -name '*.msi' -o -name '*.zip' -o -name '*.dmg' -o -name '*.pkg' -o -name '*.deb' -o -name '*.rpm' -o -name '*.AppImage' \) \
+            -printf '%P\0' \
+            | sort -z \
+            | xargs -0 sha256sum > checksums.txt
+        )
+
+        echo 'Final artifact contents:'
+        ls -la "$artifact_path"
+      displayName: 'Stage distributables, manual, and checksums'
+    - publish: '$(Build.ArtifactStagingDirectory)/$(artifactPath)'
+      artifact: '$(artifactPath)'
+      displayName: 'Publish final artifact'
+
+# - stage: Deploy
+#   displayName: 'Deploy release'
+#   dependsOn: Package
+#   condition: and(succeeded(), eq(variables['deploy'], 'true'))
+#   jobs:
+#   - job: github_release
+#     displayName: 'Create GitHub release'
+#     pool:
+#       name: TinyAgentPool
+#       demands:
+#       - Agent.OS -equals Linux
+#     steps:
+#     - download: current
+#       artifact: '$(artifactPath)'
+#       displayName: 'Download final artifact'
+#     - bash: |
+#         set -euo pipefail
+#         echo 'GitHub release deployment is enabled, but the release upload step is not configured yet.'
+#         echo 'Final staged artifacts are available at: $(Pipeline.Workspace)/$(artifactPath)'
+
+#       displayName: 'GitHub release placeholder'

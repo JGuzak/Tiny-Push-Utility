@@ -1,0 +1,93 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "setup: install dependencies",
+      "type": "npm",
+      "script": "setup",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "check",
+      "type": "npm",
+      "script": "check",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "start",
+      "type": "npm",
+      "script": "start",
+      "group": "none",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "dev: watch",
+      "type": "npm",
+      "script": "dev",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "clean",
+      "type": "npm",
+      "script": "clean",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "build: app",
+      "type": "npm",
+      "script": "build:app",
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "release: win",
+      "type": "npm",
+      "script": "release:win",
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "release: win x64",
+      "type": "npm",
+      "script": "release:win:x64",
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "release: win arm64",
+      "type": "npm",
+      "script": "release:win:arm64",
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "release: linux",
+      "type": "npm",
+      "script": "release:linux",
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

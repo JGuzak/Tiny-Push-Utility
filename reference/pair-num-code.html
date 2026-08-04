@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://push.local/pair -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <link href="http://push.local/ableton-sans-regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+    <style>
+        @font-face {
+            font-family: ableton-sans;
+            src: url(ableton-sans-regular.woff2);
+        }
+
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: ableton-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            font-weight: 700;
+        }
+
+        .text {
+            font-size: 3em;
+            font-weight: 300;
+        }
+
+        .paddingContainer {
+            margin-top: 3em;
+            margin-bottom: 0.5em;
+            margin-left: 3em;
+            margin-right: 3em;
+        }
+
+        .layoutContainer {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            float: left;
+            align-items: center;
+            align-self: stretch;
+            width: 100%;
+            height: fit-content;
+        }
+
+        .stateContainer {
+            width: 100%;
+            height: 17em;
+        }
+
+        .customCodeEntry {
+            border: 2px solid #2300FF;
+            padding: 0.3em 0.7em;
+            cursor: pointer;
+            background-color: #FFFFFF;
+            color: black;
+            font-size: 2.5em;
+        }
+
+        .customButton {
+            border: 2px solid #2300FF;
+            padding: 0.3em 0.7em;
+            cursor: pointer;
+            background-color: #2300FF;
+            color: white;
+            font-size: 2.5em;
+        }
+
+        @media only screen and (min-device-width: 1440px) {
+            h1 {
+                font-size: 2.5em;
+                font-weight: 550;
+            }
+
+            .text {
+                font-size: 1.5em;
+                font-weight: 300;
+            }
+
+            .paddingContainer {
+                margin-top: 2em;
+                margin-bottom: 0.5em;
+                margin-left: 10em;
+                margin-right: 10em;
+            }
+
+            .stateContainer {
+                height: 7em;
+            }
+
+            .customCodeEntry {
+                padding: 0.3em 0.7em;
+                font-size: 1.5em;
+            }
+
+            .customButton {
+                padding: 0.3em 0.7em;
+                font-size: 1.5em;
+            }
+
+            .invisibleWrongCode {
+                color: red;
+                visibility: hidden;
+            }
+
+
+            .visibleWrongCode {
+                visibility: visible;
+            }
+        }
+    </style>
+</head>
+
+<body height:="" 100%;="">
+    <div class="paddingContainer">
+        <div class="layoutContainer">
+            <h1 id="heading">Push Add SSH key</h1>
+            <hr>
+            <div class="stateContainer">
+                <p id="instructions" class="text">Please enter the code displayed on your Push.</p>
+                <br><br>
+                <input id="codeEntry" type="text" class="customCodeEntry" autofocus="">
+                <p id="stateWrongCode" class="invisibleWrongCode">Wrong code. You have 3 tries left.</p>
+                <br><br>
+                <button id="codeConfirm" class="customButton">Add SSH key</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        title = window.sessionStorage.getItem("pairing-title");
+        if (title)
+        {
+            document.getElementById('heading').innerText = "Push " + title;
+            window.sessionStorage.removeItem("pairing-title");
+        }
+        action = window.sessionStorage.getItem("pairing-action");
+        if (action)
+        {
+            document.getElementById('codeConfirm').textContent = action;
+            window.sessionStorage.removeItem("pairing-action");
+        }
+
+        codeEntry = document.getElementById('codeEntry');
+        codeEntry.addEventListener('keydown', codeEntered);
+        codeConfirm = document.getElementById('codeConfirm');
+        codeConfirm.addEventListener('click', submitChallengeCode);
+
+        fetch("/api/v1/challenge", {
+            method: 'POST',
+        });
+
+        function codeEntered(event) {
+            if (event.key === "Enter") {
+                submitChallengeCode();
+            }
+        }
+
+        function submitChallengeCode() {
+            fetch("/api/v1/challenge-response", {
+                method: 'POST',
+                body: '{ "secret": "' + codeEntry.value + '" }'
+            })
+                .then(function (response) {
+                    wrongCode = document.getElementById('stateWrongCode');
+
+                    if (response.status == 200) {
+                        wrongCode.textContent = ""
+                        codeEntry.style.borderColor = "#2300FF";
+                        pairingForward = window.sessionStorage.getItem("pairing-forward");
+                        if (!pairingForward)
+                        {
+                            console.error("Nothing to forward back. Make sure to set pairing-forward.");
+                        }
+                        else
+                        {
+                            window.sessionStorage.removeItem("pairing-forward");
+                            window.location.href = pairingForward;
+                        }
+                    }
+                    else {
+                        codeEntry.style.borderColor = "red";
+                        wrongCode.classList.add('visibleWrongCode');
+
+                        if (response.status == 401) {
+                            attempts = response.headers.get('X-Retries-Left');
+                            tryOrTriesLeft = attempts === "1" ? " try left." : " tries left.";
+                            wrongCode.textContent = "Wrong code. You have " + attempts + tryOrTriesLeft;
+
+                            codeEntry.value = "";
+                        }
+                        else {
+                            wrongCode.textContent = "Maximum number of login attempts exceeded. Please try again later.";
+                            codeEntry.disabled = true;
+                        }
+                    }
+                })
+        }
+    </script>
+
+
+
+</body></html>

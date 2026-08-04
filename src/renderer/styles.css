@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html,
+body {
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  min-width: 900px;
+  min-height: 620px;
+  background: #202120;
+  color: #d7d7d2;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+::selection {
+  background: #b0ddeb;
+  color: #111111;
+}
+.notification-event-list {
+  scrollbar-width: none;
+}
+
+.notification-event-list::-webkit-scrollbar {
+  display: none;
+}
+.ssh-key-copy-pulse {
+  animation: ssh-key-copy-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes ssh-key-copy-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(176, 221, 235, 0);
+    filter: brightness(1);
+  }
+
+  50% {
+    box-shadow: 0 0 0 3px rgba(176, 221, 235, 0.32);
+    filter: brightness(1.12);
+  }
+}

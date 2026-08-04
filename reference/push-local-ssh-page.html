@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!-- saved from url=(0021)http://push.local/ssh -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <link href="http://push.local/ableton-sans-regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+    <style>
+        @font-face {
+            font-family: ableton-sans;
+            src: url(ableton-sans-regular.woff2);
+        }
+
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: ableton-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            font-weight: 700;
+        }
+
+        .text {
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .paddingContainer {
+            margin-top: 3em;
+            margin-bottom: 0.5em;
+            margin-left: 3em;
+            margin-right: 3em;
+        }
+
+        .layoutContainer {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            float: left;
+            align-items: center;
+            align-self: stretch;
+            width: 100%;
+            height: fit-content;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .button {
+            border: 1px solid #ccc;
+            display: inline-block;
+            padding: 0.3em 0.7em;
+            cursor: pointer;
+            background-color: #2300FF;
+            color: white;
+            font-size: 2.5em;
+        }
+
+        @media only screen and (min-device-width: 1440px) {
+            h1 {
+                font-size: 2.5em;
+                font-weight: 550;
+            }
+
+            .text {
+                font-size: 1.5em;
+                font-weight: 300;
+            }
+
+            .paddingContainer {
+                margin-top: 2em;
+                margin-bottom: 0.5em;
+                margin-left: 10em;
+                margin-right: 10em;
+            }
+
+            .button {
+                margin-top: 0.5em;
+                padding: 0.3em 0.7em;
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+
+<body height:="" 100%;="">
+    <div class="paddingContainer">
+        <div class="layoutContainer">
+            <h1>Push SSH setup</h1>
+                <p class="text">Upload a public key to Push to allow connection via SSH.</p>
+            </div>
+
+            <form>
+                <textarea id="key" rows="8" cols="50"></textarea>
+                <br>
+                <button class="button" id="add" type="button">Add SSH key</button>
+            </form>
+
+            <p id="stateVerify" class="text hidden">Press the Shift, Select and Settings button on Push to confirm.</p>
+            <p id="stateSuccess" class="text hidden">SSH key added successfully.</p>
+            <p id="stateFailure" class="text hidden">Failed.</p>
+        </div>
+    
+
+    <script>
+        function addStyleById(idName, styleName) {
+            document.getElementById(idName).classList.add(styleName);
+        }
+
+        function removeStyleById(idName, styleName) {
+            document.getElementById(idName).classList.remove(styleName);
+        }
+
+        function hideElementById(idName) {
+            addStyleById(idName, 'hidden');
+        }
+
+        function showElementById(idName) {
+            removeStyleById(idName, 'hidden');
+        }
+
+        function addKeyClicked() {
+            showElementById('stateVerify');
+            hideElementById('stateSuccess');
+            hideElementById('stateFailure');
+            document.getElementById('add').setAttribute('disabled', '');
+            const formData = new FormData();
+            formData.append('key', document.getElementById('key').value);
+            fetch("/api/v1/add-ssh-key", {
+                method: 'POST',
+                body: formData,
+                credentials: "include"
+            })
+                .then(function (response) {
+                    if (response.status == 401) {
+                        window.sessionStorage.setItem("pairing-title", "Add SSH Key");
+                        window.sessionStorage.setItem("pairing-action", "Pair");
+                        return Promise.resolve("/pair");
+                    }
+                    else {
+                      hideElementById('stateVerify');
+                      document.getElementById('add').removeAttribute('disabled');
+                      if (response.status == 200) {
+                          showElementById('stateSuccess');
+                      } else {
+                          showElementById('stateFailure');
+                      }
+                    }
+                })
+                .then(function (data) {
+                    if (data != null) {
+                        window.location.href = data;
+                    }
+                })
+        }
+
+        const button = document.getElementById('add');
+        button.addEventListener('click', addKeyClicked);
+
+        fetch("/api/v1/access-allowed", {
+            method: 'POST',
+            credentials: "include"
+        })
+            .then(function (response) {
+                if (response.status == 401) {
+                    window.sessionStorage.setItem("pairing-title", "Add SSH key");
+                    window.sessionStorage.setItem("pairing-action", "Add SSH key");
+                    window.sessionStorage.setItem("pairing-forward", "/ssh");
+                    window.location.href = "/pair";
+                }
+            })
+    </script>
+
+
+
+</body></html>

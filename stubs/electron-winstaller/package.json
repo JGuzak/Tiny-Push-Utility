@@ -1,0 +1,6 @@
+{
+  "name": "electron-winstaller",
+  "version": "5.4.0",
+  "main": "index.js",
+  "private": true
+}
