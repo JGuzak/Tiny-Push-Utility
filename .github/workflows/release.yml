@@ -117,7 +117,7 @@ jobs:
       - name: List repo bits
         run: ls ${GITHUB_WORKSPACE}
       - name: Copy User Manual
-        run: cp ${GITHUB_WORKSPACE}/User-Manual.pdf artifacts/User-Manual.pdf
+        run: cp ${GITHUB_WORKSPACE}/user-manual.pdf artifacts/User-Manual.pdf
       # - name: Create Release
       #   uses: softprops/action-gh-release@v2
       #   with:
