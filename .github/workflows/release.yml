@@ -1,6 +1,12 @@
 name: App Release
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0)'
+        required: true
+        default: '0.0.0'
   push:
     tags:
       - 'v*'
@@ -18,7 +24,7 @@ jobs:
   #     - name: Setup Node.js
   #       uses: actions/setup-node@v4
   #       with:
-  #         node-version: '20'
+  #         node-version: '24'
 
   #     - name: Install dependencies
   #       run: npm ci
@@ -46,7 +52,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install dependencies
         run: npm ci
@@ -68,7 +74,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install dependencies
         run: npm ci
@@ -83,14 +89,14 @@ jobs:
           path: release/*.exe
 
   release:
-    needs: [build-linux, build-windows] # Add build-macos to this list when I get a macOS developer certificate.
+    # needs: [build-linux, build-windows] # Add build-macos to this list when I get a macOS developer certificate.
     runs-on: ubuntu-latest
     steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-          merge-multiple: true
+      # - name: Download all artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     path: artifacts
+      #     merge-multiple: true
 
       - name: List artifacts
         run: find artifacts -type f | sort
@@ -109,8 +115,10 @@ jobs:
       #     done
       #     echo "Final artifacts:"
       #     ls -la
+      - name: List repo bits
+        run: ls ${GITHUB_WORKSPACE}
       - name: Copy User Manual
-        run: cp .${GITHUB_WORKSPACE}/User-Manual.pdf artifacts/User-Manual.pdf
+        run: cp ${GITHUB_WORKSPACE}/User-Manual.pdf artifacts/User-Manual.pdf
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
