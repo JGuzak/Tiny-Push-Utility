@@ -26,7 +26,7 @@ jobs:
   #         node-version: '24'
   #     - name: Install dependencies
   #       run: npm ci
-  #     - name: Build app
+  #     - name: Build
   #       env:
   #         CSC_LINK: ${{ secrets.CSC_LINK }}
   #         CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
@@ -50,7 +50,7 @@ jobs:
           node-version: '24'
       - name: Install dependencies
         run: npm ci
-      - name: Build app
+      - name: Build
         run: npx electron-builder --linux --publish never
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -68,7 +68,7 @@ jobs:
           node-version: '24'
       - name: Install dependencies
         run: npm ci
-      - name: Build app
+      - name: Build
         run: npx electron-builder --win --publish never
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -85,29 +85,24 @@ jobs:
         with:
           path: artifacts
           merge-multiple: true
-      - name: List artifacts
-        run: find artifacts -type f | sort
-      # - name: Deduplicate Windows artifacts
-      #   run: |
-      #     cd artifacts
-      #     # electron-builder portable produces a generic win.exe alongside arch-specific ones
-      #     for f in *-win.exe; do
-      #       [ -f "$f" ] || continue
-      #       base="${f%-win.exe}"
-      #       if ls "${base}-win-x64.exe" 2>/dev/null || ls "${base}-win-arm64.exe" 2>/dev/null; then
-      #         echo "Removing duplicate: $f"
-      #         rm "$f"
-      #       fi
-      #     done
-      #     echo "Final artifacts:"
-      #     ls -la
-      - name: List repo bits
-        run: ls ${GITHUB_WORKSPACE}
-      - name: Copy User Manual
+      - name: Stage Artifacts
+          working-directory: artifacts
+        run: |
+            shopt -s nullglob
+            for FILE in *.exe *.AppImage *.zip; do
+              EXT="${FILE#*.}"
+              BASE="${FILE%%.*}"
+              STAGED_NAME="${BASE}-${{ github.ref_name }}.${EXT}"
+              echo "Renaming: $FILE -> $STAGED_NAME"
+              mv "$FILE" "$STAGED_NAME"
+            done
+      - name: Stage User Manual
         run: cp ${GITHUB_WORKSPACE}/user-manual.pdf artifacts/User-Manual.pdf
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
           files: |
             artifacts/*.zip
             artifacts/*.AppImage
