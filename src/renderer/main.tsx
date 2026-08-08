@@ -74,6 +74,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [events, setEvents] = useState<AppEvent[]>([createAppEvent("info", "Ready.", "app")]);
   const [isEventHistoryExpanded, setIsEventHistoryExpanded] = useState(false);
+  const [isStartupWarningVisible, setIsStartupWarningVisible] = useState(false);
   const loggedEventIdsRef = useRef<Set<string>>(new Set());
   const logAppendQueueRef = useRef<Promise<void>>(Promise.resolve());
 
@@ -111,6 +112,42 @@ function App() {
   useEffect(() => {
     events.forEach(queueEventLogWrite);
   }, [events]);
+  useEffect(() => {
+    let isMounted = true;
+
+    window.tinyPush.tutorials
+      .isDisabled("startup-risk-warning")
+      .then((result) => {
+        if (isMounted && !result.disabled) {
+          setIsStartupWarningVisible(true);
+        }
+      })
+      .catch((error: Error) => {
+        console.error("Failed to load startup warning preference.", error);
+        if (isMounted) {
+          setIsStartupWarningVisible(true);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  async function closeStartupWarning(shouldDisableWarning: boolean) {
+    setIsStartupWarningVisible(false);
+
+    if (!shouldDisableWarning) {
+      return;
+    }
+
+    try {
+      await window.tinyPush.tutorials.disable("startup-risk-warning");
+    } catch (error) {
+      const nextErrorMessage = error instanceof Error ? error.message : String(error);
+      logAppEvent("warning", `Could not save startup warning preference: ${nextErrorMessage}`, "app");
+    }
+  }
 
   useEffect(() => {
     let isMounted = true;
@@ -769,8 +806,69 @@ function App() {
           onConfirmExceptThisKey={() => confirmClearSshKeys('except-utility-key')}
         />
       ) : null}
+      {isStartupWarningVisible ? <StartupRiskWarningDialog onClose={closeStartupWarning} /> : null}
       <EventStrip events={events} isExpanded={isEventHistoryExpanded} onExportLog={exportNotificationLog} onToggleExpanded={() => setIsEventHistoryExpanded((isExpanded) => !isExpanded)} />
     </main>
+  );
+}
+
+function StartupRiskWarningDialog({ onClose }: { onClose: (shouldDisableWarning: boolean) => void }) {
+  const [shouldDisableWarning, setShouldDisableWarning] = useState(false);
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      event.preventDefault();
+      onClose(shouldDisableWarning);
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose, shouldDisableWarning]);
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-[#10110f]/75 px-4">
+      <section aria-modal="true" className="w-[min(640px,calc(100vw-32px))] rounded-[4px] border border-[#1b1c1a] bg-[#373936] p-4 shadow-xl" role="dialog">
+        <h3 className="text-xs font-bold uppercase text-[#eeeeea]">Disclaimer</h3>
+        <div className="mt-3 space-y-3 text-xs leading-5 text-[#d8d8d2]">
+          <p>
+            <span className="font-bold text-[#eeeeea]">WARNING:</span> This tool and the apps it can install are not supported by Ableton. Use this
+            software at your own risk. In the case of breaking normal Push 3 Standalone functionality, information to restore Push software back to
+            factory state can be{" "}
+            <a
+              className="font-bold text-[#b0ddeb] underline underline-offset-2 hover:text-[#c3e8f3]"
+              href="https://help.ableton.com/hc/en-us/articles/10726712498076-Recovery-methods-for-Push-3-standalone"
+              rel="noreferrer"
+              target="_blank"
+            >
+              found here
+            </a>
+            .
+          </p>
+          <p>
+            Tiny Sound Systems is not responsible for potential damage to your Push 3 Standalone device or project files. Always verify the author and
+            authenticity of tools before you install them, back up your projects and User Library often.
+          </p>
+        </div>
+        <label className="mt-4 flex items-center gap-2 text-xs font-bold text-[#eeeeea]">
+          <input
+            checked={shouldDisableWarning}
+            className="h-4 w-4 accent-[#b0ddeb]"
+            onChange={(event) => setShouldDisableWarning(event.currentTarget.checked)}
+            type="checkbox"
+          />
+          Do not show this warning again
+        </label>
+        <div className="mt-4 flex justify-end">
+          <Button onClick={() => onClose(shouldDisableWarning)} type="button" variant="compact">
+            OK
+          </Button>
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -857,4 +955,3 @@ createRoot(document.querySelector("#root") as HTMLElement).render(
     <App />
   </StrictMode>
 );
-

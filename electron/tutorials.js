@@ -3,7 +3,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 
 const TUTORIALS_FILE_NAME = 'tutorials.json';
-const VALID_TUTORIAL_IDS = new Set(['ssh-connection-workflow']);
+const VALID_TUTORIAL_IDS = new Set(['ssh-connection-workflow', 'startup-risk-warning']);
 
 function getTutorialsPath() {
   return path.join(app.getPath('userData'), TUTORIALS_FILE_NAME);

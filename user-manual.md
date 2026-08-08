@@ -9,24 +9,31 @@
 
 <h2>Table of Contents</h2>
 
-- [1. Overview](#1-overview)
-- [2. Connect to a Push](#2-connect-to-a-push)
-  - [2.1. Add SSH Key Workflow](#21-add-ssh-key-workflow)
-    - [2.1.2. Manual Method](#212-manual-method)
-  - [2.2. Clear Keys](#22-clear-keys)
-- [3. Install Apps](#3-install-apps)
-- [4. Manage Apps](#4-manage-apps)
-  - [4.1. Troubleshooting](#41-troubleshooting)
-  - [4.2. Cannot detect Push](#42-cannot-detect-push)
-- [5. Crashes and Bug Reports](#5-crashes-and-bug-reports)
+- [1. Disclaimer](#1-disclaimer)
+- [2. Overview](#2-overview)
+- [3. Connect to a Push](#3-connect-to-a-push)
+  - [3.1. Add SSH Key Workflow](#31-add-ssh-key-workflow)
+    - [3.1.1. Manual Method](#311-manual-method)
+  - [3.2. Clear Keys](#32-clear-keys)
+- [4. Install Apps](#4-install-apps)
+- [5. Manage Apps](#5-manage-apps)
+  - [5.1. Troubleshooting](#51-troubleshooting)
+  - [5.2. Cannot detect Push](#52-cannot-detect-push)
+- [6. Crashes and Bug Reports](#6-crashes-and-bug-reports)
 
 <div style="break-after: page;"></div>
 
-## 1. Overview
+## 1. Disclaimer
+
+This tool and the apps it can install are not supported by `Ableton`. Use this software at your own risk. In the case of breaking normal `Push 3 Standalone` functionality, information to restore Push software back to factory state can be [found here](https://help.ableton.com/hc/en-us/articles/10726712498076-Recovery-methods-for-Push-3-standalone).
+
+`Tiny Sound Systems` is not responsible for potential damage to your `Push 3 Standalone` device or project files. Always verify the author and authenticity of tools before you install them, back up your `projects` and `User Library` often.
+
+## 2. Overview
 
 `Tiny Push Utility` is a client application for managing 3rd party apps on `Push 3 Standalone`.
 
-## 2. Connect to a Push
+## 3. Connect to a Push
 
 Before installing or managing software, you will first need to connect to `Push`.
 
@@ -35,7 +42,7 @@ Before installing or managing software, you will first need to connect to `Push`
 
 If this is your first time connecting to Push Standalone from a computer, or if the SSH keys on Push Standalone were cleared, you will need to follow the SSH Key Workflow below.
 
-### 2.1. Add SSH Key Workflow
+### 3.1. Add SSH Key Workflow
 
 When connecting to Push Standalone for the first time, you must add an `SSH Key` so `Tiny Push Utility` can access the computer running inside Push.
 
@@ -50,7 +57,7 @@ If copying SSH keys fails, it can be retried. Just make sure to not retry more t
 3. A pop-up will appear indicating that you will need to press a button combo. After clicking `Ok`, `Tiny Push Utility` will automatically paste the SSH key into the text box and click the `Add SSH Key` button.
 4. On Push, hold `settings`, `shift`, and `select` buttons until the connection page says `SSH key added successfully`. The page will automatically close on success.
 
-#### 2.1.2. Manual Method
+#### 3.1.1. Manual Method
 
 If the automatic SSH key workflow fails, you can manually add a key with the following steps:
 
@@ -61,27 +68,27 @@ If the automatic SSH key workflow fails, you can manually add a key with the fol
 5. On Push, hold `settings`, `shift`, and `select` buttons until the connection page says `SSH key added successfully`.
 6. Close the page and click the `Detect Devices` button in `Tiny Push Utility` to refresh and connect.
 
-### 2.2. Clear Keys
+### 3.2. Clear Keys
 
 It is generally best practice to keep as few active ssh keys as possible on remote devices like Push Standalone. If you have previously connected multiple computers to Push Standalone or have rotated your SSH key, you can delete all of the keys on a device with the `Clear Keys` button.
 
 *NOTE: `Clearing Keys` will require you to go through the SSH connection workflow again.*
 
-## 3. Install Apps
+## 4. Install Apps
 
 To install an app, simply click the `Install` button and select the `.tar.gz` file provided with the app or drag and drop the `.tar.gz` file onto the dotted box next to the `Install` button.
 
 After successfully installing an app, it will show up in the `Apps` list below the `Install` section.
 
-## 4. Manage Apps
+## 5. Manage Apps
 
 As of now, the only controls for managing apps are `Collect Logs` and `Uninstall`. App version number is displayed next to the `Collect Logs` button.
 
-### 4.1. Troubleshooting
+### 5.1. Troubleshooting
 
 TODO: Write this.
 
-### 4.2. Cannot detect Push
+### 5.2. Cannot detect Push
 
 Ensure that Push Standalone and the computer running `Tiny Push Utility` are on the same network.
 
@@ -89,7 +96,7 @@ Ensure that Push Standalone and the computer running `Tiny Push Utility` are on 
 2. Check computer network connection
 3. Open your preferred browser and navigate to `push.local/ssh`
 
-## 5. Crashes and Bug Reports
+## 6. Crashes and Bug Reports
 
 Please collect logs along with an ordered list of steps to reproduce the issue. If the issue is intermittent or not reproducible, please note that when providing the logs. Non-reproducible crashes will be difficult to analyze and root cause so please bear this in mind when filing.
 

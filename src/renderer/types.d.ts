@@ -33,7 +33,7 @@ export type LocalNetwork = {
   error?: string;
 };
 
-export type TutorialId = "ssh-connection-workflow";
+export type TutorialId = "ssh-connection-workflow" | "startup-risk-warning";
 
 export type SshKeyStatus = {
   exists: boolean;
