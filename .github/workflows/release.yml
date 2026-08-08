@@ -20,15 +20,12 @@ jobs:
   #   runs-on: macos-latest
   #   steps:
   #     - uses: actions/checkout@v4
-
   #     - name: Setup Node.js
   #       uses: actions/setup-node@v4
   #       with:
   #         node-version: '24'
-
   #     - name: Install dependencies
   #       run: npm ci
-
   #     - name: Build app
   #       env:
   #         CSC_LINK: ${{ secrets.CSC_LINK }}
@@ -37,7 +34,6 @@ jobs:
   #         APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
   #         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
   #       run: npx electron-builder --mac --publish never
-
   #     - name: Upload artifacts
   #       uses: actions/upload-artifact@v4
   #       with:
@@ -48,45 +44,37 @@ jobs:
     runs-on: linux
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Install dependencies
         run: npm ci
-
       - name: Build app
         run: npx electron-builder --linux --publish never
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-linux
           path: release/*.AppImage
 
-  # build-windows:
-  #   runs-on: windows-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '24'
-
-  #     - name: Install dependencies
-  #       run: npm ci
-
-  #     - name: Build app
-  #       run: npx electron-builder --win --publish never
-
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: app-win
-  #         path: release/*.exe
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build app
+        run: npx electron-builder --win --publish never
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-win
+          path: release/*.exe
 
   release:
     needs: [build-linux] # Add build-macos to this list when I get a macOS developer certificate.
@@ -99,7 +87,6 @@ jobs:
           merge-multiple: true
       - name: List artifacts
         run: find artifacts -type f | sort
-
       # - name: Deduplicate Windows artifacts
       #   run: |
       #     cd artifacts
