@@ -86,7 +86,7 @@ jobs:
           path: artifacts
           merge-multiple: true
       - name: Stage Artifacts
-          working-directory: artifacts
+        working-directory: artifacts
         run: |
             shopt -s nullglob
             for FILE in *.exe *.AppImage *.zip; do
