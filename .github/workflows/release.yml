@@ -44,27 +44,27 @@ jobs:
   #         name: app-mac
   #         path: release/*.zip
 
-  # build-linux:
-  #   runs-on: linux
-  #   steps:
-  #     - uses: actions/checkout@v4
+  build-linux:
+    runs-on: linux
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '24'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
 
-  #     - name: Install dependencies
-  #       run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-  #     - name: Build app
-  #       run: npx electron-builder --linux --publish never
+      - name: Build app
+        run: npx electron-builder --linux --publish never
 
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: app-linux
-  #         path: release/*.AppImage
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-linux
+          path: release/*.AppImage
 
   # build-windows:
   #   runs-on: windows-latest
@@ -89,16 +89,16 @@ jobs:
   #         path: release/*.exe
 
   release:
-    # needs: [build-linux, build-windows] # Add build-macos to this list when I get a macOS developer certificate.
+    needs: [build-linux] # Add build-macos to this list when I get a macOS developer certificate.
     runs-on: linux
     steps:
-      # - name: Download all artifacts
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     path: artifacts
-      #     merge-multiple: true
-      # - name: List artifacts
-      #   run: find artifacts -type f | sort
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - name: List artifacts
+        run: find artifacts -type f | sort
 
       # - name: Deduplicate Windows artifacts
       #   run: |
@@ -118,11 +118,11 @@ jobs:
         run: ls ${GITHUB_WORKSPACE}
       - name: Copy User Manual
         run: cp ${GITHUB_WORKSPACE}/user-manual.pdf artifacts/User-Manual.pdf
-      # - name: Create Release
-      #   uses: softprops/action-gh-release@v2
-      #   with:
-      #     files: |
-      #       artifacts/*.zip
-      #       artifacts/*.AppImage
-      #       artifacts/*.exe
-      #       artifacts/*.pdf
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/*.zip
+            artifacts/*.AppImage
+            artifacts/*.exe
+            artifacts/*.pdf
