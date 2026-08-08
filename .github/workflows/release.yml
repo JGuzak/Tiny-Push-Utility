@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  # I do not have a macOS developer certificate, so I cannot build the macOS app. When I decide to pay $99 a year for one, I will uncomment this job.
+  # I do not have a macOS developer certificate, so I cannot sign the macOS app. When I decide to pay $99 a year for one, I will uncomment this job.
   # build-macos:
   #   runs-on: macos-latest
   #   steps:
@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-linux
-          path: release/*.deb
+          path: release/*.AppImage
 
   build-windows:
     runs-on: windows-latest
@@ -95,27 +95,27 @@ jobs:
       - name: List artifacts
         run: find artifacts -type f | sort
 
-      - name: Deduplicate Windows artifacts
-        run: |
-          cd artifacts
-          # electron-builder portable produces a generic win.exe alongside arch-specific ones
-          for f in *-win.exe; do
-            [ -f "$f" ] || continue
-            base="${f%-win.exe}"
-            if ls "${base}-win-x64.exe" 2>/dev/null || ls "${base}-win-arm64.exe" 2>/dev/null; then
-              echo "Removing duplicate: $f"
-              rm "$f"
-            fi
-          done
-          echo "Final artifacts:"
-          ls -la
+      # - name: Deduplicate Windows artifacts
+      #   run: |
+      #     cd artifacts
+      #     # electron-builder portable produces a generic win.exe alongside arch-specific ones
+      #     for f in *-win.exe; do
+      #       [ -f "$f" ] || continue
+      #       base="${f%-win.exe}"
+      #       if ls "${base}-win-x64.exe" 2>/dev/null || ls "${base}-win-arm64.exe" 2>/dev/null; then
+      #         echo "Removing duplicate: $f"
+      #         rm "$f"
+      #       fi
+      #     done
+      #     echo "Final artifacts:"
+      #     ls -la
       - name: Copy User Manual
-        run: cp ./User-Manual.pdf artifacts/User-Manual.pdf
+        run: cp .${GITHUB_WORKSPACE}/User-Manual.pdf artifacts/User-Manual.pdf
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             artifacts/*.zip
-            artifacts/*.deb
+            artifacts/*.AppImage
             artifacts/*.exe
             artifacts/*.pdf
