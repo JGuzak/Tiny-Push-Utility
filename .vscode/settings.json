@@ -2,7 +2,7 @@
     "markdown-pdf.breaks": true,
     "markdown-pdf.convertOnSave": true,
     "markdown-pdf.convertOnSaveExclude": [
-        "^(?!user-manual.md$).+$"
+        "^(?!User-Manual.md$).+$"
     ],
     "markdown-pdf.displayHeaderFooter": true,
     "markdown-pdf.includeDefaultStyles": true,
