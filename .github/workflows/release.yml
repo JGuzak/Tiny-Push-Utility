@@ -50,6 +50,10 @@ jobs:
           node-version: '24'
       - name: Install dependencies
         run: npm ci
+      - name: Set App Version from Git Tag
+        run: |
+          CLEAN_VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+          npm version $CLEAN_VERSION --no-git-tag-version
       - name: Build
         run: npx electron-builder --linux --publish never
       - name: Upload artifact
@@ -68,6 +72,10 @@ jobs:
           node-version: '24'
       - name: Install dependencies
         run: npm ci
+      - name: Set App Version from Git Tag
+        run: |
+          CLEAN_VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+          npm version $CLEAN_VERSION --no-git-tag-version
       - name: Build
         run: npx electron-builder --win --publish never
       - name: Upload artifact
@@ -77,7 +85,8 @@ jobs:
           path: release/*.exe
 
   release:
-    needs: [build-linux, build-windows] # Add build-macos to this list when I get a macOS developer certificate.
+    # needs: [build-linux, build-windows] # Add build-macos to this list when I get a macOS developer certificate.
+    needs: [build-windows]
     runs-on: linux
     steps:
       - name: Download all artifacts
@@ -85,17 +94,6 @@ jobs:
         with:
           path: artifacts
           merge-multiple: true
-      - name: Stage Artifacts
-          working-directory: artifacts
-        run: |
-            shopt -s nullglob
-            for FILE in *.exe *.AppImage *.zip; do
-              EXT="${FILE#*.}"
-              BASE="${FILE%%.*}"
-              STAGED_NAME="${BASE}-${{ github.ref_name }}.${EXT}"
-              echo "Renaming: $FILE -> $STAGED_NAME"
-              mv "$FILE" "$STAGED_NAME"
-            done
       - name: Stage User Manual
         run: cp ${GITHUB_WORKSPACE}/user-manual.pdf artifacts/User-Manual.pdf
       - name: Create Release
