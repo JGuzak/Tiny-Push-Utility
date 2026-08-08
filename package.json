@@ -1,6 +1,6 @@
 {
   "name": "tiny-push-utility",
-  "version": "0.1.0",
+  "version": "",
   "description": "Desktop utility for setting up and managing remote access, installing packages, and collecting logs for Push 3 standalone.",
   "main": "electron/main.js",
   "packageManager": "npm@11.13.0",
