@@ -1,12 +1,6 @@
 name: App Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version number (e.g., v1.0.0)'
-        required: true
-        default: 'v0.0.0'
   push:
     tags:
       - 'v*'
