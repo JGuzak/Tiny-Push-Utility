@@ -47,7 +47,7 @@ jobs:
       - name: Set App Version from Git Tag
         run: |
           CLEAN_VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
-          npm version $CLEAN_VERSION --no-git-tag-version
+          npm version $CLEAN_VERSION --no-git-tag-version --allow-same-version
       - name: Build
         run: npx electron-builder --linux --publish never
       - name: Upload artifact
@@ -69,7 +69,7 @@ jobs:
       - name: Set App Version from Git Tag
         run: |
           $CLEAN_VERSION = "${{ github.ref_name }}" -replace '^v', ''
-          npm version $CLEAN_VERSION --no-git-tag-version
+          npm version $CLEAN_VERSION --no-git-tag-version --allow-same-version
       - name: Build
         run: npx electron-builder --win --publish never
       - name: Upload artifact
