@@ -25,8 +25,8 @@ Electron based desktop utility for `Push 3 Standalone` to setup and manage 3rd p
 - [FAQ](#faq)
 - [Related Projects](#related-projects)
 - [App Support and Structure](#app-support-and-structure)
-- [Brainstorming](#brainstorming)
-- [Contributing \& Development](#contributing--development)
+- [Development](#development)
+  - [Feature Ideas](#feature-ideas)
   - [Build and Run Locally](#build-and-run-locally)
     - [Install dependencies](#install-dependencies)
     - [Running the App Locally](#running-the-app-locally)
@@ -43,8 +43,7 @@ The user manual can be found along side each release.
 
 | Name         | Description                                                                |
 | ------------ | -------------------------------------------------------------------------- |
-| `Pushbridge` | `Elektron Overbridge` compatible soundcard drivers for `Push 3 Standalone` |
-| `LinkCDJ` | ``
+<!-- | `Pushbridge` | `Elektron Overbridge` compatible soundcard drivers for `Push 3 Standalone` | -->
 
 ## FAQ
 
@@ -93,9 +92,9 @@ package_name-0.0.0.tar.gz
 └───images/sub-folders/etc.
 ```
 
-## Brainstorming
+## Development
 
-**App feature ideas:**
+### Feature Ideas
 
 - Verify package checksums prior to installation.
 - Add an `Update` option for installed apps
@@ -106,14 +105,6 @@ package_name-0.0.0.tar.gz
   - Allow interactive scripts and user input during install/uninstall?
   - Per-app config viewing/editing?
 - General `Push` device info/log collection?
-
-**Dev workflow improvements:**
-
-- Migrate Azure Pipeline to GitHub actions for building releases (Is this possible for MacOS?)
-
-## Contributing & Development
-
-This project is open to public contributions. Please be respectful with feature requests and PRs.
 
 ### Build and Run Locally
 
